@@ -17,6 +17,28 @@ router.get("/", (req, res) => {
   });
 });
 
+// Get a single event by ID
+router.get("/:id", (req, res) => {
+  const eventId = Number(req.params.id);
+
+  const data = fs.readFileSync(eventsFile, "utf8");
+  const events = JSON.parse(data);
+
+  const event = events.find((item) => item.id === eventId);
+
+  if (!event) {
+    return res.status(404).json({
+      success: false,
+      message: "Event not found",
+    });
+  }
+
+  res.json({
+    success: true,
+    event: event,
+  });
+});
+
 // Create a new event
 router.post("/", (req, res) => {
   const { title, date, location, maxParticipants } = req.body;
