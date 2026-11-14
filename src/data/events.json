@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Campus Hackathon 2026",
+    "date": "2026-12-20",
+    "location": "ADYPU Pune",
+    "maxParticipants": 100
+  },
+  {
+    "id": 1794639000733,
+    "title": "Tech Conference 2026",
+    "date": "2026-12-25",
+    "location": "Pune",
+    "maxParticipants": 200
+  }
+]
