@@ -1,6 +1,8 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const { validate } = require("api-contract-guard");
+const { createEventSchema, updateEventSchema } = require("../schemas");
 
 const router = express.Router();
 const eventsFile = path.join(__dirname, "../data/events.json");
@@ -60,18 +62,9 @@ router.get("/:id", (req, res) => {
   });
 });
 
-// Create a new event
-router.post("/", (req, res) => {
+// Create a new event with api-contract-guard validation
+router.post("/", validate(createEventSchema), (req, res) => {
   const { title, date, location, maxParticipants } = req.body;
-
-  // Check if all event details are provided
-  if (!title || !date || !location || !maxParticipants) {
-    return res.status(400).json({
-      success: false,
-      message: "Please provide all event details",
-    });
-  }
-
   const events = getEvents();
 
   const newEvent = {
@@ -92,8 +85,8 @@ router.post("/", (req, res) => {
   });
 });
 
-// Update an existing event
-router.put("/:id", (req, res) => {
+// Update an existing event with api-contract-guard validation
+router.put("/:id", validate(updateEventSchema), (req, res) => {
   const eventId = Number(req.params.id);
 
   if (isNaN(eventId)) {
@@ -114,13 +107,6 @@ router.put("/:id", (req, res) => {
   }
 
   const { title, date, location, maxParticipants } = req.body;
-
-  if (!title || !date || !location || !maxParticipants) {
-    return res.status(400).json({
-      success: false,
-      message: "Please provide all event details to update",
-    });
-  }
 
   const updatedEvent = {
     ...events[eventIndex],
