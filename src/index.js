@@ -19,6 +19,15 @@ app.get("/", (req, res) => {
 app.use("/api/events", eventRoutes);
 app.use("/api/registrations", registrationRoutes);
 
+// 404 handler for unknown routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
+// Centralized error handler
 app.use(errorHandler);
 
 if (require.main === module) {
