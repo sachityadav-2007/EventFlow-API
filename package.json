@@ -1,14 +1,21 @@
 {
   "name": "eventflow-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Campus Event Management and Registration REST API demonstrating api-contract-guard middleware",
+  "main": "src/index.js",
   "scripts": {
-     "start": "node src/index.js",
-     "dev": "nodemon src/index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node --test tests/api.test.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "express",
+    "event-management",
+    "api-contract-guard",
+    "validation",
+    "rest-api"
+  ],
+  "author": "Sachit Kumar",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
