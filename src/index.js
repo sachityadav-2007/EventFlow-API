@@ -5,9 +5,9 @@ const registrationRoutes = require("./routes/registrations");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
-const PORT = 3000;
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({
@@ -16,16 +16,15 @@ app.get("/", (req, res) => {
   });
 });
 
-
 app.use("/api/events", eventRoutes);
-
-
 app.use("/api/registrations", registrationRoutes);
-
 
 app.use(errorHandler);
 
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`EventFlow API is running on http://localhost:${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`EventFlow API is running on http://localhost:${PORT}`);
-});
+module.exports = app;
