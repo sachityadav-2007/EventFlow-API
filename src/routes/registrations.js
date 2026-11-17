@@ -41,9 +41,17 @@ function getEvents() {
   }
 }
 
-// Get all registrations
+// Get all registrations (supports optional ?eventId= query filter)
 router.get("/", (req, res) => {
-  const registrations = getRegistrations();
+  let registrations = getRegistrations();
+
+  if (req.query.eventId) {
+    const eventId = Number(req.query.eventId);
+    if (!isNaN(eventId)) {
+      registrations = registrations.filter((item) => item.eventId === eventId);
+    }
+  }
+
   res.json({
     success: true,
     registrations: registrations,
@@ -77,11 +85,11 @@ router.get("/:id", (req, res) => {
   });
 });
 
-// Register for an event with api-contract-guard validation
+// Register a student for an event
 router.post("/", validate(registrationSchema), (req, res) => {
   const { name, email, eventId } = req.body;
 
-  // Verify that the event exists
+  // 1. Verify that the event exists
   const events = getEvents();
   const event = events.find((item) => item.id === eventId);
 
@@ -94,36 +102,36 @@ router.post("/", validate(registrationSchema), (req, res) => {
 
   const registrations = getRegistrations();
 
-  // Prevent duplicate registration for the same event and email
-  const existingRegistration = registrations.find(
-    (item) => item.eventId === eventId && item.email.toLowerCase() === email.toLowerCase()
+  // 2. Prevent duplicate registration for the same event and email
+  const isDuplicate = registrations.some(
+    (item) => item.eventId === eventId && item.email.toLowerCase() === email.trim().toLowerCase()
   );
 
-  if (existingRegistration) {
+  if (isDuplicate) {
     return res.status(409).json({
       success: false,
       message: "Student is already registered for this event",
     });
   }
 
-  // Check event capacity
-  const eventRegistrationsCount = registrations.filter(
+  // 3. Check event capacity before accepting registration
+  const currentRegistrations = registrations.filter(
     (item) => item.eventId === eventId
   ).length;
 
-  if (eventRegistrationsCount >= event.maxParticipants) {
+  if (currentRegistrations >= event.maxParticipants) {
     return res.status(400).json({
       success: false,
-      message: "Event capacity reached. No more registrations accepted.",
+      message: "Event capacity reached. No more registrations allowed.",
     });
   }
 
-  // Create new registration
+  // 4. Save new registration
   const newRegistration = {
     id: Date.now(),
-    name,
-    email,
-    eventId,
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    eventId: Number(eventId),
     registeredAt: new Date().toISOString(),
   };
 
